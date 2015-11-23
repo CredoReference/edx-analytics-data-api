@@ -1,8 +1,10 @@
+from django.conf import settings
+from django.db import models
 from elasticsearch_dsl import connections, Index, DocType, String
 
-connections.connections.create_connection(hosts=['https://search-dev-edx-insights-7nxf4fiyp47ftvhzvruauwswqa.us-east-1.es.amazonaws.com:8443/'])
+connections.connections.create_connection(hosts=[settings.ELASTICSEARCH_LEARNERS_HOST])
 
-roster = Index('roster_1_1')
+roster = Index(settings.ELASTICSEARCH_LEARNERS_INDEX)
 @roster.doc_type
 class RosterEntry(DocType):
      username = String(index='not_analyzed')
