@@ -214,8 +214,8 @@ class Command(BaseCommand):
             end_date = timezone.now().replace(microsecond=0)
 
         logger.info("Generating data for %s...", course_id)
-        # self.generate_weekly_data(course_id, start_date, end_date)
-        # self.generate_daily_data(course_id, start_date, end_date)
-        # self.generate_video_data(course_id, video_id, video_module_id)
-        # self.generate_video_timeline_data(video_id)
+        self.generate_weekly_data(course_id, start_date, end_date)
+        self.generate_daily_data(course_id, start_date, end_date)
+        self.generate_video_data(course_id, video_id, video_module_id)
+        self.generate_video_timeline_data(video_id)
         self.generate_learner_data(course_id, start_date, end_date)
