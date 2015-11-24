@@ -184,18 +184,21 @@ class Command(BaseCommand):
                                     users_at_start=users_at_start,
                                     users_at_end=random.randint(100, users_at_start))
 
-    def generate_learner_engagement_data(self, course_id, username, date):
+    def generate_learner_engagement_data(self, course_id, username, start_date, end_date):
         logger.info("Deleting learner engagement data...")
         learner_models.Engagement.objects.all().delete()
 
         logger.info("Generating learner engagement data...")
-        for entity_type in engagement_entity_types.ALL:
-            for event in engagement_events.EVENTS[entity_type]:
-                count = random.randint(1, 100)
-                entity_id = 'an-id-{}-{}'.format(entity_type, event)
-                learner_models.Engagement.objects.create(
-                    course_id=course_id, username=username, date=date,
-                    entity_type=entity_type, entity_id=entity_id, event=event, count=count)
+        current = start_date
+        while current < end_date:
+            current = current + datetime.timedelta(days=1)
+            for entity_type in engagement_entity_types.ALL:
+                for event in engagement_events.EVENTS[entity_type]:
+                    count = random.randint(1, 100)
+                    entity_id = 'an-id-{}-{}'.format(entity_type, event)
+                    learner_models.Engagement.objects.create(
+                        course_id=course_id, username=username, date=current,
+                        entity_type=entity_type, entity_id=entity_id, event=event, count=count)
         logger.info("Done!")
 
     def generate_learner_engagement_range_data(self, course_id, start_date, end_date):
@@ -230,5 +233,5 @@ class Command(BaseCommand):
         self.generate_daily_data(course_id, start_date, end_date)
         self.generate_video_data(course_id, video_id, video_module_id)
         self.generate_video_timeline_data(video_id)
-        self.generate_learner_engagement_data(course_id, 'ed_xavier', start_date)
+        self.generate_learner_engagement_data(course_id, 'ed_xavier', start_date, end_date)
         self.generate_learner_engagement_range_data(course_id, start_date, end_date)
