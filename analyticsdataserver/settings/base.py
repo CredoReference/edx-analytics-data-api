@@ -195,7 +195,7 @@ THIRD_PARTY_APPS = (
 
 LOCAL_APPS = (
     'analytics_data_api',
-    'analytics_data_api.learner_analytics',
+    'analytics_data_api.learner_analytics.v0.LearnerAnalyticsConfig',
     'analytics_data_api.v0',
 )
 

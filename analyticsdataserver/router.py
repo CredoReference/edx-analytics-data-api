@@ -6,7 +6,7 @@ class AnalyticsApiRouter(object):
         return self._get_database(model)
 
     def _get_database(self, model):
-        if model._meta.app_label == 'v0':   # pylint: disable=protected-access
+        if model._meta.app_label in ['v0', 'learner_analytics_v0']:   # pylint: disable=protected-access
             return getattr(settings, 'ANALYTICS_DATABASE', 'default')
 
         return None

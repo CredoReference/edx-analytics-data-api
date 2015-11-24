@@ -8,6 +8,8 @@ import random
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from analytics_data_api.v0 import models
+import analytics_data_api.learner_analytics.v0.models as learner_models
+from analytics_data_api.learner_analytics.v0.constants import engagement_entity_types, engagement_events
 
 
 logging.basicConfig(level=logging.INFO)
@@ -182,6 +184,23 @@ class Command(BaseCommand):
                                     users_at_start=users_at_start,
                                     users_at_end=random.randint(100, users_at_start))
 
+    def generate_learner_data(self, course_id, start_date, end_date):
+        logger.info("Deleting learner data...")
+        learner_models.EngagementMetricRanges.objects.all().delete()
+
+        logger.info("Generating learner data...")
+        # TODO: this could be more "random"
+        interval = 10
+        for entity_type in engagement_entity_types.ALL:
+            for event in engagement_events.EVENTS[entity_type]:
+                for i, range_type in enumerate(['low', 'medium', 'high']):
+                    metric = '{0}_{1}'.format(entity_type, event)
+                    learner_models.EngagementMetricRanges.objects.create(
+                        course_id=course_id, start_date=start_date, end_date=end_date, metric=metric,
+                        range_type=range_type, low_value=i*interval, high_value=(i+1)*interval)
+                    print len(learner_models.EngagementMetricRanges.objects.all())
+        logger.info("Done!")
+
     def handle(self, *args, **options):
         course_id = 'edX/DemoX/Demo_Course'
         video_id = '0fac49ba'
@@ -195,7 +214,8 @@ class Command(BaseCommand):
             end_date = timezone.now().replace(microsecond=0)
 
         logger.info("Generating data for %s...", course_id)
-        self.generate_weekly_data(course_id, start_date, end_date)
-        self.generate_daily_data(course_id, start_date, end_date)
-        self.generate_video_data(course_id, video_id, video_module_id)
-        self.generate_video_timeline_data(video_id)
+        # self.generate_weekly_data(course_id, start_date, end_date)
+        # self.generate_daily_data(course_id, start_date, end_date)
+        # self.generate_video_data(course_id, video_id, video_module_id)
+        # self.generate_video_timeline_data(video_id)
+        self.generate_learner_data(course_id, start_date, end_date)
