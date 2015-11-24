@@ -80,27 +80,14 @@ class LearnerView(CourseViewMixin, generics.ListAPIView):
         You can specify the activity type for which you want to get the count.
 
         course_id -- Course ID
-        start_date -- 2015-11-09
-        end_date -- 2015-11-09
-
 
     """
     serializer_class = LearnerSerializer
     allow_empty = False
     username = None
-    end_date = None
-    start_date = None
-
-    def _parse_date(self, date_query_param):
-        if date_query_param:
-            return make_aware(datetime.datetime.strptime(date_query_param, settings.DATE_FORMAT), utc)
-        else:
-            return None
 
     def get(self, request, *args, **kwargs):
         self.username = self.kwargs.get('username')
-        self.start_date = self._parse_date(request.QUERY_PARAMS.get('start_date'))
-        self.end_date = self._parse_date(request.QUERY_PARAMS.get('end_date'))
         return super(LearnerView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
