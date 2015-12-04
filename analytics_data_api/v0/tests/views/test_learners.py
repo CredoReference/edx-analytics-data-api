@@ -101,7 +101,7 @@ class LearnerAPITestMixin(object):
             }
         )
 
-    def create_learners(self, *learners):
+    def create_learners(self, learners):
         """
         Creates multiple learner roster entries.  `learners` is a list of
         dicts, each representing a learner which must at least contain
@@ -115,11 +115,13 @@ class LearnerAPITestMixin(object):
 
 
 class LearnerTests(LearnerAPITestMixin, TestCaseWithAuthentication):
+    """Tests for the single learner endpoint."""
+
     path_template = '/api/v0/learners/{}/?course_id={}'
 
     def setUp(self):
         super(LearnerTests, self).setUp()
-        self.create_learners({
+        self.create_learners([{
             "username": "ed_xavier",
             "name": "Edward Xavier",
             "course_id": "edX/DemoX/Demo_Course",
@@ -128,7 +130,7 @@ class LearnerTests(LearnerAPITestMixin, TestCaseWithAuthentication):
             "problems_completed": 3,
             "videos_viewed": 6,
             "discussions_contributed": 0
-        })
+        }])
 
     def test_get_user(self):
         user_name = 'ed_xavier'
@@ -185,3 +187,72 @@ class LearnerTests(LearnerAPITestMixin, TestCaseWithAuthentication):
             u"developer_message": u"Course id/key malformed-course-id malformed."
         }
         self.assertDictEqual(json.loads(response.content), expected)
+
+
+class LearnerListTests(LearnerAPITestMixin, TestCaseWithAuthentication):
+    """Tests for the learner list endpoint."""
+
+    # Helper methods
+
+    def _get(course_id, **query_params):
+        """Helper to send a GET request to the API."""
+        query_params['course_id'] = course_id
+        return self.authenticated_get('/api/v0/learners/' , params=query_params)
+
+    # Happy cases
+
+    def test_all_learners(self):
+        usernames = ['dan', 'dennis', 'victor', 'olga', 'gabe', 'brian', 'alison']
+        course_id = 'edX/DemoX/Demo_Course'
+        self.create_learners([{'username': username, 'course_id': course_id} for user in usernames])
+        response = self._get(course_id)
+        # Verify pagination controls
+        for learner in response.content['results']:
+            self.assertIn(learner['username'], usernames)
+
+    def test_course_id(self):
+        pass
+
+    def test_segments(self):
+        pass
+
+    def test_ignore_segments(self):
+        pass
+
+    def test_cohort(self):
+        pass
+
+    def test_enrollment_mode(self):
+        pass
+
+    def test_text_search(self):
+        pass
+
+    def test_sort(self):
+        pass
+
+    def test_pagination(self):
+        pass
+
+    # Error cases
+
+    def test_no_course_id(self):
+        pass
+
+    def test_bad_course_id(self):
+        pass
+
+    def test_segments_and_ignore_segments(self):
+        pass
+
+    def test_bad_order_by(self):
+        pass
+
+    def test_bad_sort_order(self):
+        pass
+
+    def test_non_get_request(self):
+        pass
+
+    def test_bad_pagination_controls(self):
+        pass
