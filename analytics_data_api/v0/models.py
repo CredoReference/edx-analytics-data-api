@@ -138,6 +138,7 @@ class ProblemsAndTags(models.Model):
         db_table = 'tags_distribution'
 
     course_id = models.CharField(db_index=True, max_length=255)
+    org_id = models.CharField(db_index=True, max_length=255)
     module_id = models.CharField(db_index=True, max_length=255)
     tag_name = models.CharField(max_length=255)
     tag_value = models.CharField(max_length=255)
